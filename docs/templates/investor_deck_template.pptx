@@ -1,0 +1,145 @@
+# Investor Deck Template
+
+*This template follows the IdeaSprint methodology framework and is optimized for AI-era startup presentations. See the [AgentOS Investor Deck](../examples/agentos_investor_deck.md) for a complete example.*
+
+## Slide 1: Title Slide
+**Elements:**
+- Company Name & Logo
+- One-sentence value proposition/tagline
+- Presenter Name & Title
+- Date
+- Contact Information
+
+**Example**: "AgentOS - AI-Native Internal-App Factory"
+
+## Slide 2: Problem
+**Focus on validated pain points:**
+- 3 key pain points with statistics
+- Market evidence (surveys, reports)
+- Current solution inadequacy
+- Urgency/cost of inaction
+
+**Framework**: Use customer interview data and market research
+
+## Slide 3: Market Tailwinds
+**Highlight growth drivers:**
+- Industry growth statistics with CAGR
+- Technology adoption trends
+- Regulatory/compliance drivers
+- Budget allocation trends
+
+**Goal**: Establish market momentum and timing
+
+## Slide 4: Solution
+**Core value proposition:**
+- How you solve the problem uniquely
+- Key capabilities (3-4 maximum)
+- Technology differentiators
+- Demo/mockup if available
+
+**Framework**: Map directly to validated customer needs
+
+## Slide 5: Target Persona
+**Detailed customer profile:**
+- Specific role and company type
+- Key responsibilities and mandates
+- Success metrics and KPIs
+- Decision-making authority
+
+**Example**: "Maya Chen - Head of Platform & Automation"
+
+## Slide 6: Competitive Edge
+**Why you win table:**
+- Feature/capability comparison
+- Your unique advantages highlighted
+- Clear differentiation from alternatives
+- Defensible positioning
+
+**Format**: Comparison table with checkmarks/ratings
+
+## Slide 7: Market Opportunity
+**Size and business model:**
+- TAM/SAM with growth rates
+- Revenue model overview
+- Pricing strategy
+- VC/investment trends in space
+
+**Goal**: Demonstrate market size and monetization path
+
+## Slide 8: Risk Mitigation
+**Address key concerns:**
+- Top 3 risks with mitigation strategies
+- Regulatory compliance approach
+- Technical/execution risks
+- Competitive response plans
+
+**Framework**: Show awareness and preparedness
+
+## Slide 9: Validation Roadmap
+**Proof plan:**
+- 90-day validation timeline
+- Specific success metrics
+- Customer validation approach
+- Technical milestones
+
+**Goal**: Demonstrate systematic validation approach
+
+## Slide 10: The Ask
+**Clear funding request:**
+- Specific funding amount
+- Use of funds breakdown
+- Key milestones to achieve
+- Timeline to next funding round
+
+**Include**: Design partner needs if applicable
+
+---
+
+## Presentation Guidelines
+
+### Structure (10-slide rule)
+- **10 slides maximum** for main presentation
+- **1 minute per slide** average
+- **Appendix slides** for detailed follow-up
+
+### Content Principles
+- **One key message per slide**
+- **Evidence-based claims** with citations
+- **Visual hierarchy** emphasizing key points
+- **Consistent branding** throughout
+
+### Delivery Tips
+- **Tell a story**: Problem → Solution → Market → Execution → Ask
+- **Prepare demo**: Have technical demonstration ready
+- **Anticipate Q&A**: Know your numbers and assumptions
+- **Practice timing**: Rehearse 10-minute delivery
+
+### Design Standards
+- **High contrast**: Dark text on light backgrounds
+- **Minimal text**: Bullet points, not paragraphs
+- **Professional fonts**: Sans-serif for readability
+- **Consistent formatting**: Same style throughout
+
+## Follow-up Materials
+
+Prepare these supporting documents:
+- **Financial model**: 5-year projections with assumptions
+- **Technical architecture**: System design overview
+- **Go-to-market plan**: Customer acquisition strategy
+- **Competitive analysis**: Detailed landscape mapping
+- **Team bios**: Relevant experience and expertise
+
+## AI-Era Considerations
+
+For AI startups, specifically address:
+- **Data requirements**: Training data, privacy, compliance
+- **Cost structure**: GPU/compute costs and scalability
+- **Regulatory landscape**: AI governance and compliance
+- **Technical risks**: Model performance, bias, security
+- **Competitive moats**: Defensibility in AI-first world
+
+---
+
+**Example Reference**: See [AgentOS Investor Deck](../examples/agentos_investor_deck.md) for a complete implementation of this template following IdeaSprint methodology.
+
+**Last Updated**: June 27, 2025

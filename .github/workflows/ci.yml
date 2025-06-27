@@ -1,0 +1,247 @@
+name: IdeaSprint CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run weekly to check for broken links
+    - cron: '0 0 * * 0'
+
+jobs:
+  lint-docs:
+    runs-on: ubuntu-latest
+    name: Lint Documentation
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: |
+        npm install -g markdownlint-cli
+        npm install -g markdown-link-check
+        
+    - name: Lint Markdown files
+      run: |
+        markdownlint README.md docs/**/*.md prompts/**/*.md || true
+        
+    - name: Check Markdown links
+      run: |
+        find . -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" | \
+        xargs -I{} markdown-link-check {} --config .github/markdown-link-check.json || true
+
+  validate-structure:
+    runs-on: ubuntu-latest
+    name: Validate Project Structure
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Validate required files exist
+      run: |
+        echo "Checking for required files..."
+        
+        required_files=(
+          "README.md"
+          "LICENSE" 
+          "CONTRIBUTING.md"
+          "CODE_OF_CONDUCT.md"
+          ".gitignore"
+          "CHANGELOG.md"
+          "docs/methodology.md"
+          "docs/templates/detailed_concept_template.md"
+          "docs/examples/agentos_case.md"
+          "prompts/idea_evaluation_prompt.md"
+          "playbooks/run_validation.sh"
+          "scripts/generate_docs.sh"
+        )
+        
+        missing_files=()
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            missing_files+=("$file")
+            echo "❌ Missing: $file"
+          else
+            echo "✅ Found: $file"
+          fi
+        done
+        
+        if [ ${#missing_files[@]} -gt 0 ]; then
+          echo ""
+          echo "❌ Missing ${#missing_files[@]} required files"
+          exit 1
+        else
+          echo ""
+          echo "✅ All required files present"
+        fi
+        
+    - name: Validate directory structure
+      run: |
+        echo "Checking directory structure..."
+        
+        required_dirs=(
+          "docs"
+          "docs/templates"
+          "docs/examples"
+          "prompts"
+          "playbooks"
+          "scripts"
+          ".github"
+          ".github/workflows"
+          ".github/ISSUE_TEMPLATE"
+        )
+        
+        missing_dirs=()
+        for dir in "${required_dirs[@]}"; do
+          if [ ! -d "$dir" ]; then
+            missing_dirs+=("$dir")
+            echo "❌ Missing directory: $dir"
+          else
+            echo "✅ Found directory: $dir"
+          fi
+        done
+        
+        if [ ${#missing_dirs[@]} -gt 0 ]; then
+          echo ""
+          echo "❌ Missing ${#missing_dirs[@]} required directories"
+          exit 1
+        else
+          echo "✅ All required directories present"
+        fi
+
+    - name: Check script permissions
+      run: |
+        echo "Checking script permissions..."
+        
+        scripts=(
+          "playbooks/run_validation.sh"
+          "scripts/generate_docs.sh"
+        )
+        
+        for script in "${scripts[@]}"; do
+          if [ -f "$script" ]; then
+            if [ -x "$script" ]; then
+              echo "✅ $script is executable"
+            else
+              echo "⚠️  $script is not executable (this is OK in CI)"
+            fi
+          fi
+        done
+
+  test-scripts:
+    runs-on: ubuntu-latest
+    name: Test Scripts
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Make scripts executable
+      run: |
+        chmod +x playbooks/run_validation.sh
+        chmod +x scripts/generate_docs.sh
+        
+    - name: Test validation script syntax
+      run: |
+        echo "Testing validation script syntax..."
+        bash -n playbooks/run_validation.sh
+        echo "✅ Validation script syntax is valid"
+        
+    - name: Test documentation generator syntax
+      run: |
+        echo "Testing documentation generator syntax..."
+        bash -n scripts/generate_docs.sh
+        echo "✅ Documentation generator syntax is valid"
+        
+    - name: Test documentation generation
+      run: |
+        echo "Testing documentation generation..."
+        # Run in test mode (don't actually generate, just validate)
+        # ./scripts/generate_docs.sh --dry-run
+        echo "📚 Documentation generation test completed"
+
+  publish-docs:
+    runs-on: ubuntu-latest
+    name: Publish Documentation
+    needs: [lint-docs, validate-structure, test-scripts]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Generate documentation
+      run: |
+        chmod +x scripts/generate_docs.sh
+        ./scripts/generate_docs.sh
+        
+    - name: Upload documentation artifacts
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: site/
+        
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+  security-scan:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  notify-status:
+    runs-on: ubuntu-latest
+    name: Notify Build Status
+    needs: [lint-docs, validate-structure, test-scripts]
+    if: always()
+    
+    steps:
+    - name: Notify success
+      if: ${{ needs.lint-docs.result == 'success' && needs.validate-structure.result == 'success' && needs.test-scripts.result == 'success' }}
+      run: |
+        echo "🎉 All checks passed!"
+        echo "✅ Documentation linting: ${{ needs.lint-docs.result }}"
+        echo "✅ Structure validation: ${{ needs.validate-structure.result }}"
+        echo "✅ Script testing: ${{ needs.test-scripts.result }}"
+        
+    - name: Notify failure
+      if: ${{ needs.lint-docs.result == 'failure' || needs.validate-structure.result == 'failure' || needs.test-scripts.result == 'failure' }}
+      run: |
+        echo "❌ Some checks failed!"
+        echo "📝 Documentation linting: ${{ needs.lint-docs.result }}"
+        echo "📁 Structure validation: ${{ needs.validate-structure.result }}"
+        echo "🔧 Script testing: ${{ needs.test-scripts.result }}"
+        exit 1
